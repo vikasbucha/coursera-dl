@@ -596,13 +596,16 @@ def main():
     # should we be trimming paths?
     # TODO: this is a simple hack, something more elaborate needed
     mppl = None
-    if args.mppl:
-        if platform.system() == "Windows":
-            mppl = 90
-            print_("Maximum length of a path component set to %s" % mppl)
-        else:
-            # linux max path length is typically around 4060 so assume thats ok
-            pass
+    if args.mppl and args.mppl > 0:
+        #if mppl specified, always use that
+        mppl = args.mppl
+    elif platform.system() == "Windows":
+        # if mppl is not specified on windows set manually
+        mppl = 90
+        print_("Maximum length of a path component set to %s" % mppl)
+    else:
+        # linux max path length is typically around 4060 so assume thats ok
+        pass
 
     # instantiate the downloader class
     d = CourseraDownloader(
