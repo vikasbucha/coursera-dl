@@ -585,7 +585,7 @@ def main():
         creds = get_netrc_creds()
         if not creds:
             raise Exception(
-                "No username passed and no .netrc credentials found, unable to login")
+                "No username passed and no .netrc credentials found (check a netrc file exists and has the correct permissions), unable to login")
         else:
             username, password = creds
     else:
