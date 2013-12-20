@@ -193,7 +193,15 @@ class CourseraDownloader(object):
         for week in weeks:
             # title of this weeks' classes
             h3 = week.findNext('h3')
-            weekTopic = sanitise_filename(h3.text)
+
+            # sometimes the first week are the hidden sample lectures, catch
+            # this
+            if h3.text.strip().startswith("window.onload"):
+                h3txt = "Sample Lectures"
+            else:
+                h3txt = h3.text.strip()
+
+            weekTopic = sanitise_filename(h3txt)
             weekTopic = self.trim_path_part(weekTopic)
 
             # get all the classes for the week
@@ -396,7 +404,6 @@ class CourseraDownloader(object):
         course_url = self.lecture_url_from_name(cname)
 
         weeklyTopics = self.get_downloadable_content(course_url)
-
         if not weeklyTopics:
             print_(" Warning: no downloadable content found for %s, did you accept the honour code?" %
                    cname)
