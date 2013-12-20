@@ -73,8 +73,7 @@ class CourseraDownloader(object):
             self.wk_filter = map(
                 int, wk_filter.split(",")) if wk_filter else None
         except Exception as e:
-            print_(
-                "Invalid week filter, should be a comma separated list of integers", e)
+            print_("Invalid week filter, should be a comma separated list of integers", e)
             exit()
 
     def login(self, className):
