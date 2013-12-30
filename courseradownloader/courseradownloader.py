@@ -82,7 +82,7 @@ class CourseraDownloader(object):
         """
         s = requests.Session()
         if self.proxy:
-            s.proxies = {'http': proxy}
+            s.proxies = {'http': self.proxy}
 
         url = self.lecture_url_from_name(className)
         res = s.get(url, timeout=self.TIMEOUT)
