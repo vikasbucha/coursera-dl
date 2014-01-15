@@ -11,6 +11,7 @@ import shutil
 import sys
 import tarfile
 import time
+import math
 from bs4 import BeautifulSoup
 from os import path
 from six import print_
@@ -308,18 +309,21 @@ class CourseraDownloader(object):
         if path.exists(filepath):
             if clen > 0:
                 fs = path.getsize(filepath)
-                delta = clen - fs
+                delta = math.fabs(clen - fs)
 
-                # all we know is that the current filesize may be shorter than it should be and the content length may be incorrect
-                # overwrite the file if the reported content length is bigger
-                # than what we have already by at least k bytes (arbitrary)
+                # there are cases when a file was not completely downloaded or
+                # something went wront that meant the file on disk is
+                # unreadable. The file on disk my be smaller or larger (!) than
+                # the reported content length in those cases.
+                # Hence we overwrite the file if the reported content length is
+                # different than what we have already by at least k bytes (arbitrary)
 
                 # TODO this is still not foolproof as the fundamental problem is that the content length cannot be trusted
                 # so this really needs to be avoided and replaced by something
                 # else, eg., explicitly storing what downloaded correctly
-                if delta > 2:
+                if delta > 10:
                     print_(
-                        '    - "%s" seems incomplete, downloading again' % fname)
+                        '    - "%s" seems corrupt, downloading again' % fname)
                 else:
                     print_('    - "%s" already exists, skipping' % fname)
                     dl = False
@@ -345,7 +349,7 @@ class CourseraDownloader(object):
                 slice_size = 524288  # 512KB buffer
                 last_time = time.time()
                 with open(filepath, 'wb') as f:
-                    for data in response.iter_content(slice_size):
+                    for data in response.iter_content(chunk_size=slice_size):
                         f.write(data)
                         try:
                             percent = int(float(done_size) / full_size * 100)
