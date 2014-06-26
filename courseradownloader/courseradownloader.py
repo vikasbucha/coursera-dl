@@ -295,6 +295,10 @@ class CourseraDownloader(object):
         fname = target_fname or filename_from_header(
             headers) or filename_from_url(url)
 
+        if fname == 'download.mp4':
+            print '    - skipping "%s" (download.mp4)' % fname
+            return
+
         # split off the extension
         basename, ext = path.splitext(fname)
 
